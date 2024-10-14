@@ -64,4 +64,13 @@ jobs:
         with:
           app-name: "table-pdf"
           slot-name: "Production"
-          package: .
+          package: release.zip
+          name: "ZIP"
+       
+      - name: Delete zip file
+        run: rm release.zip
+
+
+
+
+
