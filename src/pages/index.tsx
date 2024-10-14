@@ -1,3 +1,4 @@
+import Export from "@/components/Export";
 import Guide from "@/components/Guide";
 import Loading from "@/components/Loading";
 import ModalContent from "@/components/ModalContent";
@@ -178,13 +179,21 @@ export default function Home() {
           />
         )}
         {result && (
-          <Button
-            variant="contained"
-            disabled={!!isLoading}
-            onClick={() => handleCreate(columnHeaders, rowHeaders)}
-          >
-            指定した見出し情報でPDFから再抽出
-          </Button>
+          <>
+            <Export
+              tableTitle={tableTitle}
+              columnHeaders={columnHeaders}
+              rowHeaders={rowHeaders}
+              result={result}
+            />
+            <Button
+              variant="contained"
+              disabled={!!isLoading}
+              onClick={() => handleCreate(columnHeaders, rowHeaders)}
+            >
+              指定した見出し情報でPDFから再抽出
+            </Button>
+          </>
         )}
       </Grid2>
     </>
