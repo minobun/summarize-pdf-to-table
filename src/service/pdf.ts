@@ -2,7 +2,7 @@ import axios from "axios";
 import pdfParse from "pdf-parse";
 
 export async function downloadPdfAndConvertText(url: string): Promise<string> {
-  if (!url.endsWith(".ext")) throw new Error();
+  if (!url.endsWith(".pdf")) throw new Error();
   // PDFファイルのダウンロード
   const pdfResponse = await axios.get(url, {
     responseType: "arraybuffer", // バイナリ形式で取得
