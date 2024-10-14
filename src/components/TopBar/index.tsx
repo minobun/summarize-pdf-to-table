@@ -1,18 +1,19 @@
-import * as React from "react";
+import { Mode } from "@/types";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
-import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
-import Menu from "@mui/material/Menu";
-import Container from "@mui/material/Container";
 import Button from "@mui/material/Button";
+import Container from "@mui/material/Container";
+import IconButton from "@mui/material/IconButton";
+import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import { Mode } from "@/types";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import * as React from "react";
 
 const pages: { title: string; value: Mode }[] = [
   { title: "使い方", value: "guide" },
   { title: "利用規約", value: "rule" },
+  { title: "リリース情報", value: "release" },
 ];
 // const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
@@ -54,7 +55,7 @@ export default function TopBar(props: { setModal: (mode: Mode) => void }) {
               color: "inherit",
             }}
           >
-            Tablify PDF
+            Tablify PDF（β版）
           </Typography>
 
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>

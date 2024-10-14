@@ -2,11 +2,12 @@ import Export from "@/components/Export";
 import Guide from "@/components/Guide";
 import Loading from "@/components/Loading";
 import ModalContent from "@/components/ModalContent";
+import Release from "@/components/Release";
 import Rule from "@/components/Rule";
 import TableComponent from "@/components/TableComponent";
 import TopBar from "@/components/TopBar";
 import { Info } from "@/types";
-import { Button, Grid2, Modal, TextField, Box } from "@mui/material";
+import { Button, Grid2, Modal, TextField } from "@mui/material";
 import { useState } from "react";
 
 export default function Home() {
@@ -122,6 +123,11 @@ export default function Home() {
       <Modal open={modal === "guide"} onClose={() => setModal("home")}>
         <ModalContent>
           <Guide />
+        </ModalContent>
+      </Modal>
+      <Modal open={modal === "release"} onClose={() => setModal("home")}>
+        <ModalContent>
+          <Release />
         </ModalContent>
       </Modal>
       <Grid2
