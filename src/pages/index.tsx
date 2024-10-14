@@ -6,12 +6,12 @@ import Release from "@/components/Release";
 import Rule from "@/components/Rule";
 import TableComponent from "@/components/TableComponent";
 import TopBar from "@/components/TopBar";
-import { Info } from "@/types";
+import { Info, Mode } from "@/types";
 import { Button, Grid2, Modal, TextField } from "@mui/material";
 import { useState } from "react";
 
 export default function Home() {
-  const [modal, setModal] = useState<"home" | "guide" | "rule">("home");
+  const [modal, setModal] = useState<Mode>("home");
   const [pdfUrl, setPdfUrl] = useState("");
 
   const [rowHeaders, setRowHeaders] = useState<string[]>([]);
