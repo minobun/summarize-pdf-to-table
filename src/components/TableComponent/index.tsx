@@ -76,7 +76,11 @@ export default function TableComponent(props: {
             ))}
             <TableCell>
               <Tooltip title="列を追加">
-                <Button variant="contained" onClick={() => addLine("row")}>
+                <Button
+                  variant="contained"
+                  onClick={() => addLine("row")}
+                  disabled={rowHeaders.length > 10}
+                >
                   +
                 </Button>
               </Tooltip>
@@ -125,7 +129,11 @@ export default function TableComponent(props: {
           <TableRow>
             <TableCell>
               <Tooltip title="行を追加">
-                <Button variant="contained" onClick={() => addLine("column")}>
+                <Button
+                  variant="contained"
+                  onClick={() => addLine("column")}
+                  disabled={columnHeaders.length > 10}
+                >
                   +
                 </Button>
               </Tooltip>
