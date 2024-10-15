@@ -157,12 +157,17 @@ export default function Home() {
         padding="10px"
       >
         {pdfUrls.map((pdfUrl, index) => (
-          <FormControl sx={{ m: 1 }} variant="outlined" fullWidth>
-            <InputLabel htmlFor={`outlined-adornment-password-${index}`}>
+          <FormControl
+            key={`pdf-url-control-${index}`}
+            sx={{ m: 1 }}
+            variant="outlined"
+            fullWidth
+          >
+            <InputLabel htmlFor={`pdf-url-${index}`}>
               抽出したいPDFのURL
             </InputLabel>
             <OutlinedInput
-              id={`outlined-adornment-password-${index}`}
+              id={`pdf-url-${index}`}
               error={!pdfUrl.endsWith(".pdf")}
               value={pdfUrl}
               type="text"
