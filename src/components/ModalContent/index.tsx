@@ -10,9 +10,7 @@ const style = {
   bgcolor: "background.paper",
   boxShadow: 24,
   p: 4,
-  maxHeight: "50vh",
-  overflow: "auto",
-  whiteSpace: "normal",
+  maxHeight: "50vh"
 };
 
 export default function ModalContent(props: { children: ReactElement }) {

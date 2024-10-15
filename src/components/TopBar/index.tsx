@@ -56,7 +56,7 @@ export default function TopBar(props: { setModal: (mode: Mode) => void }) {
             }}
           >
             Tablify PDF（β版）
-          </Typography>
+            </Typography>
 
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
             <IconButton
@@ -97,20 +97,15 @@ export default function TopBar(props: { setModal: (mode: Mode) => void }) {
           <Typography
             variant="h5"
             noWrap
-            component="a"
-            href="#app-bar-with-responsive-menu"
             sx={{
               mr: 2,
               display: { xs: "flex", md: "none" },
               flexGrow: 1,
-              fontFamily: "monospace",
               fontWeight: 700,
-              letterSpacing: ".3rem",
               color: "inherit",
-              textDecoration: "none",
             }}
           >
-            Tablify PDF
+            Tablify PDF（β版）
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
             {pages.map((page) => (
