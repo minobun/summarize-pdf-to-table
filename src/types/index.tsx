@@ -9,4 +9,4 @@ export type Header = {
   key: string;
 };
 
-export type Mode = "home" | "guide" | "rule" | "release";
+export type Mode = "guide" | "rule" | "release";

@@ -11,7 +11,7 @@ import { Button, Grid2, Modal, TextField } from "@mui/material";
 import { useState } from "react";
 
 export default function Home() {
-  const [modal, setModal] = useState<Mode>("home");
+  const [modal, setModal] = useState<Mode | undefined>(undefined);
   const [pdfUrl, setPdfUrl] = useState("");
 
   const [rowHeaders, setRowHeaders] = useState<string[]>([]);
@@ -115,19 +115,19 @@ export default function Home() {
   return (
     <>
       <TopBar setModal={setModal} />
-      <Modal open={modal === "rule"} onClose={() => setModal("home")}>
+      <Modal open={!!modal} onClose={() => setModal(undefined)}>
         <ModalContent>
-          <Rule />
-        </ModalContent>
-      </Modal>
-      <Modal open={modal === "guide"} onClose={() => setModal("home")}>
-        <ModalContent>
-          <Guide />
-        </ModalContent>
-      </Modal>
-      <Modal open={modal === "release"} onClose={() => setModal("home")}>
-        <ModalContent>
-          <Release />
+          <>
+          {
+            modal === "guide" && <Guide />
+          }
+                    {
+            modal === "rule" && <Rule />
+          }
+          {
+            modal === "release" && <Release />
+          }
+          </>
         </ModalContent>
       </Modal>
       <Grid2
@@ -172,7 +172,7 @@ export default function Home() {
         {isLoading === "data" && (
           <Loading label="テーブル情報を作成中です..." />
         )}
-        {(rowHeaders.length > 0 || columnHeaders.length > 0) && (
+        {(rowHeaders.length > 0 || columnHeaders.length > 0 || result) && (
           <TableComponent
             tableTitle={tableTitle}
             rowHeaders={rowHeaders}

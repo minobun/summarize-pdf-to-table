@@ -1,7 +1,7 @@
-import type { NextApiRequest, NextApiResponse } from "next";
-import { downloadPdfAndConvertText } from "@/service/pdf";
-import { client, createCompletion } from "@/service/openai";
 import { extractJsonFromSchema } from "@/service/extract";
+import { client, createCompletion } from "@/service/openai";
+import { downloadPdfAndConvertText } from "@/service/pdf";
+import type { NextApiRequest, NextApiResponse } from "next";
 import { z } from "zod";
 
 type Data = {
@@ -25,7 +25,8 @@ You are a helpful assistant for extracting data from PDFs.
     "tableTitle": "string",
     "rowHeaders": { 
       "type":"array",
-      "maxItems: 10,
+      "maxItems": 10,
+      "minItems": 1,
       "items": {
         "type": "string",
         "maxLength": 20
@@ -34,6 +35,7 @@ You are a helpful assistant for extracting data from PDFs.
     "columnHeaders": { 
       "type":"array",
       "maxItems": 10,
+      "minItems": 1,
       "items": {
         "type": "string",
         "maxLength": 20
@@ -119,8 +121,8 @@ ${columnHeaders.map((columnHeader: string) => {
 const extractSchema = z.object({
   pdfUrl: z.string().url(),
   type: z.union([z.literal("create"), z.literal("infer")]),
-  rowHeaders: z.string().max(20).array().max(10).optional(),
-  columnHeaders: z.string().max(20).array().max(10).optional(),
+  rowHeaders: z.string().max(20).array().min(1).max(10).optional(),
+  columnHeaders: z.string().max(20).array().min(1).max(10).optional(),
 });
 
 export default async function handler(
@@ -131,12 +133,9 @@ export default async function handler(
     req.body
   );
 
-  console.log(rowHeaders);
-  console.log(columnHeaders);
   try {
     // PDFファイルのダウンロード
     const pdfContent = await downloadPdfAndConvertText(pdfUrl);
-    console.log(pdfContent);
 
     const { userPrompt, systemPrompt } =
       type === "infer"
@@ -147,9 +146,6 @@ export default async function handler(
             rowHeaders ?? []
           );
 
-    console.log(systemPrompt);
-    console.log(userPrompt);
-
     // OpenAI API にクエリを送信
     const completionContent = await createCompletion({
       client,
@@ -159,7 +155,6 @@ export default async function handler(
     });
 
     const answer = JSON.parse(extractJsonFromSchema(completionContent));
-    console.log(answer);
 
     res.status(200).json({ answer });
   } catch (error) {
