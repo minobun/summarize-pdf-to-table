@@ -8,7 +8,7 @@ type Data = {
   answer: string;
 };
 
-function inferHeadersPrompt(pdfContent: string): {
+function inferHeadersPrompt(pdfContents: string[]): {
   systemPrompt: string;
   userPrompt: string;
 } {
@@ -16,7 +16,8 @@ function inferHeadersPrompt(pdfContent: string): {
 You are a helpful assistant for extracting data from PDFs. 
 
 # Rules
-- Please infer information required by user from based on [PDF Content].
+- Please infer information required by user from based on [PDF Contents].
+- If there are multiple PDFs, pick up the common information to compare PDFs.
 
 # JSON Schema
 {
@@ -61,14 +62,19 @@ You are a helpful assistant for extracting data from PDFs.
 }
 `;
   const userPrompt = `
-# PDF Content
+# PDF Contents
+${pdfContents.map((pdfContent, index) => {
+  return `
+## PDF Content ${index + 1}
 ${pdfContent}
+`;
+})}
 `;
   return { systemPrompt, userPrompt };
 }
 
 function createTableBasedOnHeadersPrompt(
-  pdfContent: string,
+  pdfContents: string[],
   columnHeaders: string[],
   rowHeaders: string[]
 ): { systemPrompt: string; userPrompt: string } {
@@ -101,9 +107,13 @@ You are a helpful assistant for extracting data from PDFs.
 { "札幌店":{ "9月売上": "10万円", "前月売り上げ比": '110%'},"東京店":{ "9月売上": "15万円", "前月売り上げ比": '90%'}}
 `;
   const userPrompt = `
-# PDF Content
+# PDF Contents
+${pdfContents.map((pdfContent, index) => {
+  return `
+## PDF Content ${index + 1}
 ${pdfContent}
-
+`;
+})}
 # Row Headers
 ${rowHeaders.map((rowHeader: string) => {
   return `- ${rowHeader}`;
@@ -119,32 +129,39 @@ ${columnHeaders.map((columnHeader: string) => {
 }
 
 const extractSchema = z.object({
-  pdfUrl: z.string().url(),
+  pdfUrls: z.string().url().array().min(1).max(10),
   type: z.union([z.literal("create"), z.literal("infer")]),
-  rowHeaders: z.string().max(20).array().min(1).max(10).optional(),
-  columnHeaders: z.string().max(20).array().min(1).max(10).optional(),
+  rowHeaders: z.string().max(100).array().min(1).max(10).optional(),
+  columnHeaders: z.string().max(100).array().min(1).max(10).optional(),
 });
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
-  const { pdfUrl, type, rowHeaders, columnHeaders } = extractSchema.parse(
+  const { pdfUrls, type, rowHeaders, columnHeaders } = extractSchema.parse(
     req.body
   );
 
   try {
     // PDFファイルのダウンロード
-    const pdfContent = await downloadPdfAndConvertText(pdfUrl);
+    const pdfContents = await Promise.all(
+      pdfUrls.map(async (pdfUrl) => await downloadPdfAndConvertText(pdfUrl))
+    );
+
+    if (pdfContents.join().length > 100000) throw new Error();
 
     const { userPrompt, systemPrompt } =
       type === "infer"
-        ? inferHeadersPrompt(pdfContent)
+        ? inferHeadersPrompt(pdfContents)
         : createTableBasedOnHeadersPrompt(
-            pdfContent,
+            pdfContents,
             columnHeaders ?? [],
             rowHeaders ?? []
           );
+
+    console.log(userPrompt);
+    console.log(systemPrompt);
 
     // OpenAI API にクエリを送信
     const completionContent = await createCompletion({
@@ -153,6 +170,8 @@ export default async function handler(
       userPrompt,
       systemPrompt,
     });
+
+    console.log(completionContent);
 
     const answer = JSON.parse(extractJsonFromSchema(completionContent));
 

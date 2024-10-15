@@ -7,12 +7,21 @@ import Rule from "@/components/Rule";
 import TableComponent from "@/components/TableComponent";
 import TopBar from "@/components/TopBar";
 import { Info, Mode } from "@/types";
-import { Button, Grid2, Modal, TextField } from "@mui/material";
+import {
+  Button,
+  FormControl,
+  Grid2,
+  IconButton,
+  InputAdornment,
+  InputLabel,
+  Modal,
+  OutlinedInput,
+} from "@mui/material";
 import { useState } from "react";
 
 export default function Home() {
   const [modal, setModal] = useState<Mode | undefined>(undefined);
-  const [pdfUrl, setPdfUrl] = useState("");
+  const [pdfUrls, setPdfUrls] = useState<string[]>([""]);
 
   const [rowHeaders, setRowHeaders] = useState<string[]>([]);
   const [columnHeaders, setColumnHeaders] = useState<string[]>([]);
@@ -54,7 +63,11 @@ export default function Home() {
     columnHeaders: string[],
     rowHeaders: string[]
   ) => {
-    if (!pdfUrl) return;
+    if (
+      pdfUrls.length === 0 ||
+      pdfUrls.some((pdfUrl) => !pdfUrl.endsWith("pdf"))
+    )
+      return;
     setIsLoading("data");
     const responseCreateBody = {
       method: "POST",
@@ -62,7 +75,7 @@ export default function Home() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        pdfUrl,
+        pdfUrls,
         type: "create",
         rowHeaders,
         columnHeaders,
@@ -72,7 +85,7 @@ export default function Home() {
     try {
       const responseCreated = await fetch("/api/extract", responseCreateBody);
       if (responseCreated.ok) {
-        const data = await responseCreated.json();
+        const data: { answer: Info } = await responseCreated.json();
         setResult(data.answer);
       } else {
         console.error("Failed to extract data");
@@ -84,23 +97,33 @@ export default function Home() {
   };
 
   const handleExtract = async () => {
-    if (!pdfUrl) return;
+    if (
+      pdfUrls.length === 0 ||
+      pdfUrls.some((pdfUrl) => !pdfUrl.endsWith("pdf"))
+    )
+      return;
     setIsLoading("header");
     const responseInferBody = {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ pdfUrl, type: "infer" }),
+      body: JSON.stringify({ pdfUrls, type: "infer" }),
     };
     console.log(responseInferBody);
 
     try {
       const responseInfered = await fetch("/api/extract", responseInferBody);
       if (responseInfered.ok) {
-        const data = await responseInfered.json();
-        setColumnHeaders(data.answer.columnHeaders);
-        setRowHeaders(data.answer.rowHeaders);
+        const data: {
+          answer: {
+            columnHeaders: string[];
+            rowHeaders: string[];
+            tableTitle: string;
+          };
+        } = await responseInfered.json();
+        setColumnHeaders(data.answer.columnHeaders.filter((_, i) => i < 10));
+        setRowHeaders(data.answer.rowHeaders.filter((_, i) => i < 10));
         setTableTitle(data.answer.tableTitle);
         await handleCreate(data.answer.columnHeaders, data.answer.rowHeaders);
       } else {
@@ -118,15 +141,9 @@ export default function Home() {
       <Modal open={!!modal} onClose={() => setModal(undefined)}>
         <ModalContent>
           <>
-          {
-            modal === "guide" && <Guide />
-          }
-                    {
-            modal === "rule" && <Rule />
-          }
-          {
-            modal === "release" && <Release />
-          }
+            {modal === "guide" && <Guide />}
+            {modal === "rule" && <Rule />}
+            {modal === "release" && <Release />}
           </>
         </ModalContent>
       </Modal>
@@ -138,18 +155,48 @@ export default function Home() {
         spacing={3}
         margin="10px"
         padding="10px"
-        height={
-          rowHeaders.length > 0 || columnHeaders.length > 0 ? "30vh" : "60vh"
-        }
       >
-        <TextField
-          label="PDFファイルのURL"
-          type="url"
-          value={pdfUrl}
-          onChange={(e) => setPdfUrl(e.target.value)}
-          fullWidth
-          required
-        />
+        {pdfUrls.map((pdfUrl, index) => (
+          <FormControl sx={{ m: 1 }} variant="outlined" fullWidth>
+            <InputLabel htmlFor={`outlined-adornment-password-${index}`}>
+              抽出したいPDFのURL
+            </InputLabel>
+            <OutlinedInput
+              id={`outlined-adornment-password-${index}`}
+              error={!pdfUrl.endsWith(".pdf")}
+              value={pdfUrl}
+              type="text"
+              onChange={(e) =>
+                setPdfUrls((cur) =>
+                  cur.map((item, i) => (i === index ? e.target.value : item))
+                )
+              }
+              endAdornment={
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={() =>
+                      setPdfUrls((cur) => cur.filter((_, i) => i !== index))
+                    }
+                    edge="end"
+                  >
+                    🗑️
+                  </IconButton>
+                </InputAdornment>
+              }
+              label="抽出したいPDFのURL"
+            />
+          </FormControl>
+        ))}
+
+        <Button
+          variant="outlined"
+          onClick={() => setPdfUrls((cur) => [...cur, ""])}
+          disabled={pdfUrls.length > 10}
+        >
+          追加
+        </Button>
+
         <Button
           variant="contained"
           disabled={!!isLoading}
