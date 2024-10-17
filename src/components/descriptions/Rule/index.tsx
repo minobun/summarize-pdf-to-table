@@ -1,9 +1,4 @@
-import { ReactElement } from "react";
-
-export default function Rule(): ReactElement {
-  return (
-    <p style={{ whiteSpace: "pre-line" }}>
-      {`
+export const RuleDescription = `
 # 利用規約
 
 ## 第1条（総則）
@@ -34,7 +29,4 @@ export default function Rule(): ReactElement {
 
 ## 第8条（準拠法および管轄）
 本規約は、日本法に準拠し、解釈されます。本規約に関して生じる一切の紛争については、当社の所在地を管轄する裁判所を専属的合意管轄裁判所とします。
-`}
-    </p>
-  );
-}
+`

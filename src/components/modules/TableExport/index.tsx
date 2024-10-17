@@ -1,28 +1,21 @@
-import React from "react";
-import * as XLSX from "xlsx";
-import { stringify } from "csv-stringify/sync";
-import { Info } from "@/types";
+import { TableRow } from "@/types";
 import { Button, ButtonGroup } from "@mui/material";
+import { stringify } from "csv-stringify/sync";
+import * as XLSX from "xlsx";
 
-export default function Export(props: {
+export default function TableExport(props: {
   tableTitle: string;
-  rowHeaders: string[];
   columnHeaders: string[];
-  result: Info;
+  result: TableRow[];
 }) {
-  const { tableTitle, rowHeaders, columnHeaders, result } = props;
+  const { tableTitle, columnHeaders, result } = props;
 
   // CSVエクスポート用関数
   const exportToCSV = () => {
     // 配列に変換
     const csvContent = [
-      [tableTitle, ...rowHeaders],
-      ...columnHeaders.map((column) => [
-        column,
-        ...rowHeaders.map((row) =>
-          result[column][row] ? result[column][row] : ""
-        ),
-      ]),
+      [tableTitle, ...columnHeaders],
+      ...result.map((tableRow: TableRow) => Object.values(tableRow))
     ];
     const blob = new Blob([stringify(csvContent)], {
       type: "text/csv;charset=utf-8;",
@@ -37,7 +30,7 @@ export default function Export(props: {
 
   // Excelエクスポート用関数
   const exportToExcel = () => {
-    const worksheet = XLSX.utils.json_to_sheet(Object.keys(result));
+    const worksheet = XLSX.utils.json_to_sheet(result);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
     const excelBuffer = XLSX.write(workbook, {

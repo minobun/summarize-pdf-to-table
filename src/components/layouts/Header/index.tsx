@@ -17,8 +17,8 @@ const pages: { title: string; value: Mode }[] = [
 ];
 // const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
-export default function TopBar(props: { setModal: (mode: Mode) => void }) {
-  const { setModal } = props;
+export default function Header(props: { setMode: (mode: Mode) => void }) {
+  const { setMode } = props;
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
     null
   );
@@ -56,7 +56,7 @@ export default function TopBar(props: { setModal: (mode: Mode) => void }) {
             }}
           >
             Tablify PDF（β版）
-            </Typography>
+          </Typography>
 
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
             <IconButton
@@ -86,7 +86,7 @@ export default function TopBar(props: { setModal: (mode: Mode) => void }) {
               sx={{ display: { xs: "block", md: "none" } }}
             >
               {pages.map((page) => (
-                <MenuItem key={page.value} onClick={() => setModal(page.value)}>
+                <MenuItem key={page.value} onClick={() => setMode(page.value)}>
                   <Typography sx={{ textAlign: "center" }}>
                     {page.title}
                   </Typography>
@@ -111,7 +111,7 @@ export default function TopBar(props: { setModal: (mode: Mode) => void }) {
             {pages.map((page) => (
               <Button
                 key={page.value}
-                onClick={() => setModal(page.value)}
+                onClick={() => setMode(page.value)}
                 sx={{ my: 2, color: "white", display: "block" }}
               >
                 {page.title}
