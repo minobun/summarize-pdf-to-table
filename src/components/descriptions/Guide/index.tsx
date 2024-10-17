@@ -1,9 +1,4 @@
-import { ReactElement } from "react";
-
-export default function Guide(): ReactElement {
-  return (
-    <p style={{ whiteSpace: "pre-line" }}>
-      {`
+export const GuideDescription = `
 # 使い方ガイド
 ## アプリケーションの概要
 このアプリケーションは、指定されたPDFからテーブル情報を抽出し、表示・編集することができます。利用者は見出し情報を編集して再度抽出し、目的に合わせたテーブルデータを確認することが可能です。
@@ -28,7 +23,4 @@ export default function Guide(): ReactElement {
 ## 注意事項
 正しいPDFのURLを入力してください。URLが間違っている場合、抽出が正しく行われない可能性があります。
 見出しを編集した場合、再抽出しない限り編集内容は反映されません。
-`}
-    </p>
-  );
-}
+`
