@@ -3,6 +3,7 @@ import Layouts from "@/components/layouts";
 import PdfUrlsImport from "@/components/modules/PdfUrlsImport";
 import TableComponent from "@/components/modules/TableComponent";
 import TableExport from "@/components/modules/TableExport";
+import { useToastContext } from "@/providers/ToastProvider";
 import { extractInformationBasedOnHeadersFromPdfUrls } from "@/services/client/extract";
 import { guessHeadersFromPdfUrls } from "@/services/client/guess";
 import { TableRow } from "@/types";
@@ -24,6 +25,7 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState<"guess" | "extract" | undefined>(
     undefined
   );
+  const { showToast } = useToastContext();
 
   useEffect(() => {
     const rowTitles = result.map((row) => row.title ?? "");
@@ -37,8 +39,10 @@ export default function Home() {
       setTableTitle(data.tableTitle);
       setColumnHeaders(data.columnHeaders);
       setResult(data.rowHeaders.map((rowHeader) => ({ title: rowHeader })))
+      showToast("success", "カラムを作成しました。")
     } catch (error) {
       console.error("Failed to guess headers.")
+      showToast("error", "カラム作成に失敗しました。")
     }
     setIsLoading(undefined);
   }
@@ -48,8 +52,10 @@ export default function Home() {
     try {
       const data = await extractInformationBasedOnHeadersFromPdfUrls(columnHeaders, rowHeaders, pdfUrls)
       setResult(data);
+      showToast("success", "データを抽出しました。")
     } catch (error) {
       console.error("Failed to guess headers.")
+      showToast("error", "データの抽出に失敗しました。")
     }
     setIsLoading(undefined);
   }
