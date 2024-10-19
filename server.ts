@@ -23,3 +23,10 @@ app.prepare().then(() => {
     }`
   );
 });
+
+const appInsights = require("applicationinsights");
+appInsights
+  .setup(process.env.APPLICATION_INSTRUMENTAION_KEY)
+  .setAutoCollectConsole(true, true)
+  .setSendLiveMetrics(true)
+  .start();
