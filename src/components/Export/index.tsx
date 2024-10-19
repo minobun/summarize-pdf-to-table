@@ -1,23 +1,28 @@
-import { useToastContext } from "@/providers/ToastProvider";
-import { TableRow } from "@/types";
-import { Button, ButtonGroup } from "@mui/material";
-import { stringify } from "csv-stringify/sync";
+import React from "react";
 import * as XLSX from "xlsx";
+import { stringify } from "csv-stringify/sync";
+import { Info } from "@/types";
+import { Button, ButtonGroup } from "@mui/material";
 
-export default function TableExport(props: {
+export default function Export(props: {
   tableTitle: string;
+  rowHeaders: string[];
   columnHeaders: string[];
-  result: TableRow[];
+  result: Info;
 }) {
-  const { tableTitle, columnHeaders, result } = props;
-  const { showToast } = useToastContext();
+  const { tableTitle, rowHeaders, columnHeaders, result } = props;
 
   // CSVエクスポート用関数
   const exportToCSV = () => {
     // 配列に変換
     const csvContent = [
-      [tableTitle, ...columnHeaders],
-      ...result.map((tableRow: TableRow) => Object.values(tableRow))
+      [tableTitle, ...rowHeaders],
+      ...columnHeaders.map((column) => [
+        column,
+        ...rowHeaders.map((row) =>
+          result[column][row] ? result[column][row] : ""
+        ),
+      ]),
     ];
     const blob = new Blob([stringify(csvContent)], {
       type: "text/csv;charset=utf-8;",
@@ -28,12 +33,11 @@ export default function TableExport(props: {
     a.download = "data.csv";
     a.click();
     URL.revokeObjectURL(url); // リソースを解放
-    showToast("success", "CSVファイルを出力しました。")
   };
 
   // Excelエクスポート用関数
   const exportToExcel = () => {
-    const worksheet = XLSX.utils.json_to_sheet(result);
+    const worksheet = XLSX.utils.json_to_sheet(Object.keys(result));
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
     const excelBuffer = XLSX.write(workbook, {
@@ -50,7 +54,6 @@ export default function TableExport(props: {
     a.download = "data.xlsx";
     a.click();
     URL.revokeObjectURL(url); // リソースを解放
-    showToast("success", "Excelファイルを出力しました。")
   };
 
   return (

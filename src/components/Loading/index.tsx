@@ -1,5 +1,5 @@
-import { Box, CircularProgress, Typography } from "@mui/material";
-import { ReactElement } from "react";
+import React, { ReactElement } from "react";
+import { CircularProgress, Typography, Box } from "@mui/material";
 
 export default function Loading(props: { label: string }): ReactElement {
   const { label } = props;
