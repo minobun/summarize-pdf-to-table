@@ -1,7 +1,6 @@
 # Tablify PDF
 
-
-## For Developers Tis
+## For Developers Tips
 
 ### Update `xlsx` liberary
 

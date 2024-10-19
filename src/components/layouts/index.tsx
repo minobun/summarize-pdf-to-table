@@ -7,28 +7,30 @@ import { ReleaseDescription } from "../descriptions/Release";
 import { RuleDescription } from "../descriptions/Rule";
 import Header from "./Header";
 
-export default function Layouts(props: { children: ReactElement[] }): ReactElement {
-    const { children } = props
-    const [mode, setMode] = useState<Mode | undefined>(undefined)
-    return (
-        <>
-            <Header setMode={setMode} />
-            <Modal isOpen={!!mode} onClose={() => setMode(undefined)}>
-                <p style={{ whiteSpace: "pre-line" }} >
-                    {mode === "guide" && GuideDescription}
-                    {mode === "rule" && RuleDescription}
-                    {mode === "release" && ReleaseDescription}
-                </p>
-            </Modal >
-            <Grid2
-                container
-                direction="column"
-                margin="10px"
-                padding="10px"
-                spacing={3}
-            >
-                {children}
-            </Grid2>
-        </>
-    )
+export default function Layouts(props: {
+  children: ReactElement[] | ReactElement;
+}): ReactElement {
+  const { children } = props;
+  const [mode, setMode] = useState<Mode | undefined>(undefined);
+  return (
+    <>
+      <Header setMode={setMode} />
+      <Modal isOpen={!!mode} onClose={() => setMode(undefined)}>
+        <p style={{ whiteSpace: "pre-line" }}>
+          {mode === "guide" && GuideDescription}
+          {mode === "rule" && RuleDescription}
+          {mode === "release" && ReleaseDescription}
+        </p>
+      </Modal>
+      <Grid2
+        container
+        direction="column"
+        margin="10px"
+        padding="10px"
+        spacing={3}
+      >
+        {children}
+      </Grid2>
+    </>
+  );
 }
