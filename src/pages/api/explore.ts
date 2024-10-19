@@ -6,6 +6,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import puppeteer, { Browser } from "puppeteer";
 import { z } from "zod";
 import { ExploreResult } from "@/types";
+import appInsights from "@/libs/appInsights";
 
 const exploreSchema = z.object({
   targetUrls: z.string().url().array().min(1).max(5),
@@ -47,9 +48,13 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const { targetUrls, urlsExplored } = exploreSchema.parse(req.body);
+  if (appInsights)
+    appInsights.trackTrace({ message: "Received Explore Request" });
   try {
     // Puppeteerのブラウザを起動
     const browser = await puppeteer.launch();
+    if (appInsights)
+      appInsights.trackTrace({ message: "Successed to launch browser" });
 
     const urls = targetUrls.filter(
       (targetUrl) => !urlsExplored.some((url) => targetUrl === url)
@@ -59,6 +64,9 @@ export default async function handler(
     const results = await Promise.all(
       await urls.map(async (url) => await guessPdfsUserNeeds(browser, url))
     );
+
+    if (appInsights)
+      appInsights.trackTrace({ message: "Successed to explore browser" });
 
     const newTargetUrls = results.flatMap((result) => result.targetUrls);
     const newUrlsExplored = results.flatMap((result) => result.urlsExplored);
@@ -73,6 +81,8 @@ export default async function handler(
 
     await browser.close();
   } catch (error) {
+    if (appInsights)
+      appInsights.trackTrace({ message: "Failed to process Explore Request." });
     console.error(error);
     res.status(500);
   }
