@@ -1,29 +1,37 @@
 import { ColumnHeader, TableRow } from "@/types";
 import { Dispatch, ReactElement, useMemo } from "react";
-import { DynamicDataSheetGrid, keyColumn, textColumn } from "react-datasheet-grid";
+import {
+  DynamicDataSheetGrid,
+  keyColumn,
+  textColumn,
+} from "react-datasheet-grid";
 
-import 'react-datasheet-grid/dist/style.css';
+import "react-datasheet-grid/dist/style.css";
 
 export default function TableComponent(props: {
-  tableTitle: string;
-  columnHeaders: string[];
   data: TableRow[];
   setData: Dispatch<TableRow[]>;
 }): ReactElement {
-  const { tableTitle, columnHeaders, data, setData } = props;
+  const { data, setData } = props;
   const columns = useMemo(() => {
-    if (columnHeaders && tableTitle) {
-      return [{ ...keyColumn('title', textColumn), title: tableTitle },
-      ...columnHeaders.map((columnHeader, i) => ({
-        ...keyColumn(`column-${i + 1}` as ColumnHeader, textColumn),
-        title: columnHeader
-      }))
+    if (data && data.length > 0) {
+      return [
+        { ...keyColumn("title", textColumn), title: "タイトル" },
+        ...Object.keys(data[0]).map((_, i) => ({
+          ...keyColumn(`column-${i + 1}` as ColumnHeader, textColumn),
+          title: `カラム${i + 1}`,
+        })),
       ];
     }
     return [];
-  }, [columnHeaders, tableTitle]);
+  }, [data]);
 
   return (
-    <DynamicDataSheetGrid value={data} onChange={setData} columns={columns} lockRows />
+    <DynamicDataSheetGrid
+      value={data}
+      onChange={setData}
+      columns={columns}
+      lockRows
+    />
   );
 }

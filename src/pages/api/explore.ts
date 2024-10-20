@@ -52,7 +52,9 @@ export default async function handler(
     appInsights.trackTrace({ message: "Received Explore Request" });
   try {
     // Puppeteerのブラウザを起動
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    });
     if (appInsights)
       appInsights.trackTrace({ message: "Successed to launch browser" });
 
