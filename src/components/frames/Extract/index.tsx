@@ -7,7 +7,7 @@ import { extractInformationBasedOnHeadersFromPdfUrls } from "@/services/client/e
 import { guessHeadersFromPdfUrls } from "@/services/client/guess";
 import { TableRow } from "@/types";
 import { Button, ButtonGroup, Divider, TextField } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export default function Extract() {
   const [pdfUrls, setPdfUrls] = useState<string[]>([""]);
@@ -58,15 +58,14 @@ export default function Extract() {
     setIsLoading(undefined);
   };
 
-  const addColumn = () => {
-    setColumnHeaders([...columnHeaders, "追加"]);
-  };
+  const addColumn = useCallback(() => {
+    setColumnHeaders((cur) => [...cur, ""]);
+  }, [setColumnHeaders]);
 
-  const addRow = () => {
-    const newRowHeaders = [...rowHeaders, ""];
-    setRowHeaders(newRowHeaders);
-    setResult((cur) => [...cur, { title: "追加" }]);
-  };
+  const addRow = useCallback(() => {
+    setRowHeaders((cur) => [...cur, ""]);
+    setResult((cur) => [...cur, { title: "" }]);
+  }, [setRowHeaders, setResult]);
 
   return (
     <>
