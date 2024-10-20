@@ -45,7 +45,7 @@ async function guessPdfsUserNeeds(
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse<ExploreResult>
 ) {
   const { targetUrls, urlsExplored } = exploreSchema.parse(req.body);
   if (appInsights)
@@ -84,6 +84,6 @@ export default async function handler(
     if (appInsights)
       appInsights.trackTrace({ message: "Failed to process Explore Request." });
     console.error(error);
-    res.status(500);
+    res.status(500).end();
   }
 }
