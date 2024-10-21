@@ -24,13 +24,13 @@ You are a helpful assistant for extracting data from PDFs.
         },
     },
     "columnHeaders": {
-        "type":"array",
-        "maxItems": 10,
-        "minItems": 1,
+        "type":"object",
         "items": {
-            "type": "string",
-            "maxLength": 30
+            "column-1": "string",
+            ...
+            "column-20": "string"
         },
+        "description": "column names which starts with 'column'. 20 columns at most."
     },
     },
 }
@@ -44,11 +44,11 @@ You are a helpful assistant for extracting data from PDFs.
     "横浜店",
     "仙台店"
     ],
-    "columnHeaders": [
-    "6月売上高",
-    "7月売上高",
-    "8月売上高"
-    ]
+    "columnHeaders": {
+      "column-1": "売り上げ高",
+      "column-2": "前月比率",
+      "column-3": "利益率"
+    }
 }
 `;
   const userPrompt = `

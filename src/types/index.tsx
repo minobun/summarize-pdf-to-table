@@ -30,7 +30,7 @@ export type ExtractResult = TableRow[];
 export type GuessResult = {
   tableTitle: string;
   rowHeaders: string[];
-  columnHeaders: string[];
+  columnHeaders: TableRow;
 };
 
 export type ExploreResult = {

@@ -1,5 +1,5 @@
 import { Mode } from "@/types";
-import { Grid2 } from "@mui/material";
+import { Stack } from "@mui/material";
 import { ReactElement, useState } from "react";
 import Modal from "../bases/Modal";
 import { GuideDescription } from "../descriptions/Guide";
@@ -22,15 +22,16 @@ export default function Layouts(props: {
           {mode === "release" && ReleaseDescription}
         </p>
       </Modal>
-      <Grid2
-        container
+      <Stack
         direction="column"
         margin="10px"
         padding="10px"
         spacing={3}
+        width="75%"
+        maxWidth="800px"
       >
         {children}
-      </Grid2>
+      </Stack>
     </>
   );
 }
