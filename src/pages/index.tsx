@@ -1,4 +1,5 @@
 import Explore from "@/components/frames/Explore";
+import ExploreAndExtract from "@/components/frames/ExploreAndExtract";
 import Extract from "@/components/frames/Extract";
 import Layouts from "@/components/layouts";
 import { CoffeeMaker, FindInPage } from "@mui/icons-material";
@@ -29,10 +30,18 @@ export default function Home() {
           <FindInPage />
           PDF探索
         </ToggleButton>
+        <ToggleButton value="exploreAndExtract">
+          <FindInPage />
+          PDF探索
+          +
+          <CoffeeMaker />
+          PDF抽出
+        </ToggleButton>
       </ToggleButtonGroup>
       <>
         {mode === "extract" && <Extract />}
         {mode === "explore" && <Explore />}
+        {mode === "exploreAndExtract" && <ExploreAndExtract />}
       </>
     </Layouts>
   );
