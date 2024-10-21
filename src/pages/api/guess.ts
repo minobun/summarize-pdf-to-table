@@ -1,22 +1,20 @@
 import { extractJsonFromSchema } from "@/services/server/ai";
-import { extractInformationBasedOnHeadersPrompt } from "@/services/server/extract";
+import { guessHeadersPrompt } from "@/services/server/guess";
 import { client, createCompletion } from "@/services/server/openai";
 import { downloadPdfAndConvertText } from "@/services/server/pdf";
-import { ExtractResult } from "@/types";
-import type { NextApiRequest, NextApiResponse } from "next";
+import { GuessResult } from "@/types";
+import { NextApiRequest, NextApiResponse } from "next";
 import { z } from "zod";
 
-const extractSchema = z.object({
+const guessSchema = z.object({
   pdfUrls: z.string().url().array().min(1).max(10),
-  rowHeaders: z.string().max(100).array().min(1).max(20),
-  columnHeaders: z.string().max(100).array().min(1).max(20),
 });
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ExtractResult>
+  res: NextApiResponse<GuessResult>
 ) {
-  const { pdfUrls, rowHeaders, columnHeaders } = extractSchema.parse(req.body);
+  const { pdfUrls } = guessSchema.parse(req.body);
 
   try {
     // PDFファイルのダウンロード
@@ -26,11 +24,7 @@ export default async function handler(
 
     if (pdfContents.join().length > 100000) throw new Error();
 
-    const { userPrompt, systemPrompt } = extractInformationBasedOnHeadersPrompt(
-      pdfContents,
-      columnHeaders,
-      rowHeaders
-    );
+    const { userPrompt, systemPrompt } = guessHeadersPrompt(pdfContents);
 
     // OpenAI API にクエリを送信
     const completionContent = await createCompletion({
@@ -42,7 +36,7 @@ export default async function handler(
 
     const answer = JSON.parse(
       extractJsonFromSchema(completionContent)
-    ) as ExtractResult;
+    ) as GuessResult;
 
     res.status(200).json(answer);
   } catch (error) {
