@@ -3,7 +3,8 @@ import { request } from "./api";
 
 export const explorePdfsBasedOnQueryFromUrl = async (
   query: string,
-  targetUrl: string
+  targetUrls: string[],
+  urlsExplored: string[]
 ): Promise<ExploreResult> => {
   const options = {
     method: "POST",
@@ -11,9 +12,9 @@ export const explorePdfsBasedOnQueryFromUrl = async (
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      targetUrl,
       query,
-      maxItems: 3,
+      targetUrls,
+      urlsExplored,
     }),
   };
   return await request<ExploreResult>("/api/explore", options);
@@ -29,7 +30,7 @@ export const explorePdfsFromUrl = async (
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      targetUrls: targetUrls.filter((_, i) => i < 4),
+      targetUrls: targetUrls.filter((_, i) => i < 3),
       urlsExplored,
     }),
   };

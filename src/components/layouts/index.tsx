@@ -27,8 +27,8 @@ export default function Layouts(props: {
         margin="10px"
         padding="10px"
         spacing={3}
-        width="75%"
-        maxWidth="800px"
+        width="100%"
+        maxWidth="95vw"
       >
         {children}
       </Stack>

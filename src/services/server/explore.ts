@@ -1,48 +1,78 @@
 import { Page } from "puppeteer";
 
-export function guessAnchorsUserNeedsPrompt(
+export function guessPdfsUserNeedsPrompt(
   query: string,
   content: string,
-  anchors: string[],
-  maxItems: number
+  targetUrls: string[],
+  pdfUrls: string[],
 ): {
   systemPrompt: string;
   userPrompt: string;
 } {
   const systemPrompt = `
-You are a helpful assistant for guessing anchors user needs.
+You are a helpful assistant for guessing urls user needs.
 
 # Rules
-- Please guess anchors which can lead pdf file required by user from [Anchors] based on [User Query].
-- [Anchors] are already extracted from [Content].
+- Please guess urls and pdf urls which have the pdf file required by user based on [User Query] and [Content].
+- Please answer urls from [Urls] and pdf urls from [Pdf Urls]
+- [Urls] and [Pdf Urls] are already extracted from [Content].
 
 # JSON Schema
 {
-    "type": "array",
-    "maxItems": ${maxItems},
-    "minItems": 1,
-    "items": {
-        "type": "string",
-        "enum": "${anchors.join()}"
-    }
+  "type": "object"
+  "properties": {
+      "targetUrls":{
+        "type": "array",
+        "maxItems": 3,
+        "minItems": 1,
+        "items": {
+            "type": "string",
+            "description": "url"
+            "enum": "${targetUrls.join()}"
+        }
+      },
+      "pdfUrls":{
+        "type": "array",
+        "maxItems": 5,
+        "minItems": 1,
+        "items": {
+            "type": "string",
+            "description": "pdf url"
+            "enum": "${pdfUrls.join()}"
+        }
+      },
+  }
 }
- 
+
 # Example
-[
-    "//example.com/about",
-    "/readme",
-    "/link"
-]
+{
+  "targetUrls":[
+      "https:/example.com/about",
+      "https:/example.com/readme",
+      "https:/example.com/link"
+  ],
+  "pdfUrls":[
+      "https:/example.com/about/info.pdf",
+      "https:/example.com/info.pdf",
+      "https:/example.com/link.pdf"
+  ]
+}
 `;
   const userPrompt = `
 # User Query
 ${query}
 
 # Content
-${content}
+${content.slice(0, 5000)}
 
-# Anchors
-${anchors.map((anchor) => `- ${anchor}`)}
+# Urls
+${targetUrls.map((url) => `- ${url}
+`)}
+
+# PdfUrls
+${pdfUrls.map((url) => `- ${url}
+`)}
+
 `;
   return { systemPrompt, userPrompt };
 }
@@ -53,7 +83,7 @@ export async function getContentFromPage(page: Page): Promise<string> {
 }
 
 export async function getAllAnchorsFromPage(page: Page): Promise<string[]> {
-  const hrefs = await page.$$eval("a", (anchors) =>
+  const hrefs = await page.$$eval("a", (anchors: any[]) =>
     anchors
       .map((anchor) => anchor.getAttribute("href"))
       .filter((href) => href !== null)
